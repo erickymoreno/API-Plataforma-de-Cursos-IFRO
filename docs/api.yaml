@@ -1,0 +1,632 @@
+openapi: 3.0.1
+info:
+  title: Plataforma de cursos do IFRO
+  description: API responsável pelo controle da plataforma de cursos ofertados pelo IFRO
+  termsOfService: ''
+  contact: 
+    email: 'email@email.com'
+  license: 
+    name: MIT
+    url: https://opensourse.org/licenses/MIT
+  version: 1.0.0
+tags:
+  - name: Usuário
+    description: Todas as rotas relacionadas com usários
+  - name: Curso
+    description: Todas as rotas relacionadas com cursos
+  - name: Aula
+    description: Todas as rotas relacionadas com aulas
+  - name: Certificado
+    description: Todas as rotas relacionadas com certificados
+paths:
+  /login:
+    post:
+      tags:
+        - Usuário
+      summary: Realiza login em uma conta já existente
+      requestBody:
+        description: Obeto de usuário que será usado para logar
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                senha:
+                  type: string
+                  format: password
+                  minLength: 8
+      responses:
+        200:
+          description: Usuário válido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth: 
+                    type: boolean
+                    default: true
+                  token:
+                    type: string
+                    format: uuid
+        400:
+          description: Não foram encontrados usuários
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: 'E-mail ou senha inválidos'
+  /logout:
+    post:
+      tags:
+      - Usuário
+      summary: Realiza logout em uma conta préviamente autenticada
+      responses:
+        204:
+          description: Autenticação revogada com sucesso
+
+  /usuario:
+    post:
+      tags:
+      - Usuário
+      summary: Cadastra um novo usuário à plataforma
+      operationId: addUsuario
+      requestBody:
+        description: Objeto de usuário que será cadastrado à plataforma
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+        required: true
+      responses:
+        201:
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        400:
+          description: Entrada inválida
+          content: {} 
+          
+    get:
+      tags: 
+      - Usuário
+      summary: Busca as informações de um usuário pelo seu id
+      responses:
+        200:
+          description: Operação bem-sucedida
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        401:
+          description: Usuário não está logado
+          content: {}
+        400:
+          description: Usuário não encontrado
+          content: {}
+    put:
+      tags:
+      - Usuário
+      summary: Atualiza o registro de um usuário
+      description: Essa ação só pode ser realizada por usuários autenticados em sua conta
+      operationId: updateUser
+      requestBody:
+        description: Objeto de usuário atualizado
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Usuario'
+        required: true
+      responses:
+        200:
+          description: Operação bem-sucedida
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Usuario'
+        400: 
+          description: Usuário fornecido inválido
+          content: {}
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - Usuário
+      summary: Excluir um usuário
+      description: Essa ação só pode ser realizada por usuários autenticados
+      operationId: deleteUsuario
+      responses:
+        204:
+          description: Usuario deletado com sucesso
+          content: {}
+        404:
+          description: Usuario não encontrado
+          content: {}
+
+  /usuario/admin:
+    post:
+      tags:
+      - Usuário
+      summary: Cadastra um novo usuário administrador ou instrutor à plataforma
+      operationId: addUsuarioAdmin
+      requestBody:
+        description: Objeto de usuário que será cadastrado à plataforma
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Usuario'
+        required: true
+      responses:
+        201:
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        400:
+          description: Entrada inválida
+          content: {} 
+  
+  /curso/{cursoid}/matricular:
+    post:
+      tags:
+      - Usuário
+      summary: Matricular em um curso
+      description: Essa ação só pode ser realizada por usuários autenticados
+      operationId: MatricularEmCurso
+      parameters:
+      - name: cursoid
+        in: path
+        description: O id do curso que será matriculado
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        200:
+          description: Usuário matriculado com sucesso
+          content: {}
+        400:
+          description: Usuário já matriculado nesse curso 
+          content: {}
+        404:
+          description: Curso não encontrado
+          content: {}
+  
+  /curso/{cursoid}/aula/{aulaid}/topico/{topicoid}:
+    get:
+      tags:
+      - Usuário
+      summary: Finaliza um tópico
+      description: Essa ação só pode ser realizada por usuários autenticados
+      operationId: finishtopico
+      parameters:
+      - name: cursoid
+        in: path
+        description: Id do curso no qual a aula faz parte
+        required: true
+        schema: 
+          type: string
+      - name: aulaid
+        in: path
+        description: O Id da aula no qual o tópico faz parte
+        required: true
+        schema:
+          type: string
+      - name: topicoid
+        in: path
+        description: Id do tópico que será finalizado
+        required: true
+        schema: 
+          type: string
+      responses: 
+        200: 
+          description: Topico finalizado com sucesso
+          content: {}
+        404:
+          description: Topico não encontrado
+          content: {}
+      x-codegen-request-body-name: body
+      
+  /curso/{cursoid}/aula/{aulaid}/finalizar:
+    get:
+      tags:
+      - Usuário
+      summary: Finaliza uma aula
+      description: Essa ação só pode ser realizada por usuários autenticados
+      operationId: finishaula
+      parameters:
+      - name: cursoid
+        in: path
+        description: Id do curso no qual a aula faz parte
+        required: true
+        schema: 
+          type: string
+      - name: aulaid
+        in: path
+        description: O Id da aula que será finalizada
+        required: true
+        schema:
+          type: string
+      responses: 
+        200: 
+          description: Aula finalizada com sucesso
+          content: {}
+        404:
+          description: Aula não encontrada
+          content: {}
+      x-codegen-request-body-name: body
+
+  /curso/{cursoid}/finalizar:
+    get:
+      tags:
+      - Usuário
+      summary: Finaliza um curso
+      description: Essa ação só pode ser realizada por usuários autenticados
+      operationId: finishcurso
+      parameters:
+      - name: cursoid
+        in: path
+        description: Id do curso que será finalizado
+        required: true
+        schema: 
+          type: string
+      responses: 
+        200: 
+          description: Curso finalizado com sucesso
+          content: {}
+        404:
+          description: Curso não encontrado
+          content: {}
+      x-codegen-request-body-name: body
+  
+  /certificado/{certificadoid}:
+    get:
+          tags:
+          - Certificado
+          summary: Valida um certificado pelo seu ID
+          description: O ID do certificado que será validado deve ser informado no parâmetro
+          operationId: validatecertificado
+          parameters:
+          - name: certificadoid
+            in: path
+            description: ID do certificado que terá as informações listadas
+            required: true
+            schema:
+              type: string
+              format: uuid
+          responses: 
+            200: 
+              description: Operação bem-sucedida
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Certificado'
+            400:
+              description: Entrada inválida
+              content: {}
+            404:
+              description: Certificado não encontrado
+              content: {}
+    
+
+
+  /curso:
+    post:
+      tags:
+        - Curso
+      summary: Cadastra um novo curso
+      description: Essa ação só pode ser realizada por usuários autenticados
+      operationId: addCourse
+      requestBody:
+        description: Objeto de curso que será adicionado à plataforma
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Curso'
+      responses:
+        201:
+          description: Operação bem-sucedida, curso criado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Curso'
+        400:
+          description: Entrada inválida
+          content: {}
+          
+    get:
+      tags:
+        - Curso
+      summary: Listagem de todos os cursos
+      description: Deve ser passado o numero da pagina para a alteração da mesma
+      operationId: listatodoscursos
+      responses:
+        200:
+          description: Operação bem-sucedida
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Curso'
+        404:
+          description: Nenhum curso encontrado
+
+          
+  /curso/nome/{nome}:
+    get:
+      tags:
+        - Curso
+      summary: Buscar curso pelo nome
+      parameters:
+        - name: nome
+          in: path
+          description: O nome do curso que será buscado
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Operação bem-sucedida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Curso'
+        404:
+          description: Nenhum curso encontrado com o nome informado
+          
+  /curso/{cursoid}:
+    get:
+      tags:
+        - Curso
+      summary: Exibição de detalhes de um curso
+      operationId: getCourseById
+      parameters:
+      - name: cursoid
+        in: path
+        description: O ID do curso que será buscado
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Operação bem-sucedida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Curso'
+          
+        404:
+          description: Nenhum curso encontrado com o id informado
+    put:
+      tags:
+        - Curso
+      summary: Altera os dados de um curso
+      description: Essa ação só pode ser realizado por um usuário autorizado
+      operationId: updateCourse
+      parameters:
+      - name: cursoid
+        in: path
+        description: O ID do curso que será alterado
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Curso atualizado
+        content:
+          '*/*':
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                descricao: 
+                  type: string
+                cargaHoraria: 
+                  type: integer
+                tag:
+                  type: string
+        required: true
+      responses:
+        200: 
+          description: Curso atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Curso'
+        404:
+          description: Nenhum curso encontrado com o id informado
+          content: {}
+
+    delete:
+      tags:
+      - Curso
+      summary: Excluir um curso
+      description: Essa ação só pode ser realizada por usuários autenticados
+      operationId: deleteCurso
+      parameters:
+      - name: cursoid
+        in: path
+        description: O id do curso que será excluído
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        204:
+          description: Curso deletado com sucesso
+          content: {}
+        404:
+          description: Curso não encontrado
+          content: {} 
+  
+  /curso/{cursoId}/aula:
+    post:
+      tags: 
+      - Aula
+      summary: Cria uma nova aula para o curso
+      description: Essa ação só pode ser realizada por usuários autenticados
+      operationId: addtopico
+      parameters:
+      - name: cursoId
+        in: path
+        required: true
+        schema: 
+          type: string
+      requestBody:
+        description: Nova aula que será adicionada ao curso
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Aula'
+      responses:
+        201: 
+          description: Aula criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aula'
+        400:
+          description: Entrada inválida
+          content: {}
+      x-codegen-request-body-name: body
+
+  /curso/{cursoid}/aula/{aulaid}:
+    put:
+      tags:
+      - Aula
+      summary: Atualiza uma aula
+      description: Essa ação só pode ser realizada por usuários autenticados
+      operationId: updateAula
+      parameters:
+      - name: cursoid
+        in: path
+        description: Id do curso no qual a aula faz parte
+        required: true
+        schema: 
+          type: string
+      - name: aulaid
+        in: path
+        description: O Id da aula que será atualizada
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Objeto da aula atualizado
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/Aula'
+        required: true
+      responses: 
+        200: 
+          description: Aula criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aula'
+        404:
+          description: Aula não encontrado
+          content: {}
+      x-codegen-request-body-name: body
+  
+    delete:
+      tags: 
+      - Aula
+      summary: Deleta uma aula de um curso
+      description: O id do curso deve ser passado antes da exclusão de uma aula
+      operationId: deleteaula
+      parameters:
+      - name: cursoid
+        in: path
+        description: Id do curso no qual a aula faz parte
+        required: true
+        schema: 
+          type: string
+      - name: aulaid
+        in: path
+        description: O id da aula que será excluida
+        required: true
+        schema:
+          type: string
+      responses:
+        204:
+          description: Aula deletada com sucesso
+          content: {}
+        404:
+          description: Aula não encontrada
+          content: {}
+components:
+  schemas:
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        nome:
+          type: string
+        dataNascimento:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        senha:
+          type: string
+          minLength: 8
+        fotoPerfil:
+          type: string
+    Curso:
+      type: object
+      properties:
+        nome:
+          type: string
+        descricao: 
+          type: string
+        cargaHoraria: 
+          type: integer
+        tag:
+          type: string
+        aulas:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Aula'
+
+    Aula:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nome:
+          type: string
+        descricao:
+          type: string
+        topicos:
+          type: array
+          items:
+            type: object
+            properties:
+              id: 
+                type: string
+                format: uuid
+              conteudo:
+                type: string
+                format: uuid
+    
+    Certificado:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid

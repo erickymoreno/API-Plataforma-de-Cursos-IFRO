@@ -1,0 +1,49 @@
+{
+  "name": "api-plataforma-de-cursos-ifro",
+  "version": "1.0.0",
+  "description": "Plataforma de cursos do IFRO",
+  "main": "src/index.js",
+  "scripts": {
+    "test": " jest --forceExit",
+    "dev": "docker-compose up -d && nodemon src/index.js",
+    "start": "docker-compose up -d && node src/index.js",
+    "lint": "eslint **/**/*.js",
+    "lint:fix": "eslint --fix **/**/*.js",
+    "seed": "node seeder.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.fslab.dev/fslab/api-plataforma-de-cursos-ifro.git"
+  },
+  "keywords": [
+    "cursos"
+  ],
+  "author": "FSLab",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "5.0.1",
+    "cors": "2.8.5",
+    "dotenv": "10.0.0",
+    "express": "4.17.1",
+    "jest": "27.5.1",
+    "joi": "17.6.0",
+    "jsonwebtoken": "8.5.1",
+    "mongodb": "4.1.2",
+    "mongoose": "6.0.2",
+    "morgan": "1.10.0",
+    "superjest": "0.1.0",
+    "supertest": "6.2.2",
+    "swagger-ui-express": "4.1.6",
+    "uuid": "^8.3.2",
+    "yamljs": "0.3.0"
+  },
+  "devDependencies": {
+    "eslint": "7.32.0",
+    "eslint-config-standard": "16.0.3",
+    "eslint-plugin-import": "2.24.2",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "5.1.0",
+    "mongoose-seed": "0.6.0",
+    "nodemon": "2.0.12"
+  }
+}

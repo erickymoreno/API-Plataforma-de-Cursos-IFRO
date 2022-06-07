@@ -1,0 +1,30 @@
+Usuario{
+    _id: "uuid",
+    nome: "João da Silva",
+    dataDeNascimento: "12/02/1998"
+    email: "joão.silva@gmail.com",
+    senha: "$@#wqe#$531$%%#455KJdf4155",
+    fotoDePerfil: "uuid"
+    cursa:[
+        {_idCurso:"", aulas:[{aula:1, status:"cursando", topicosConcluidos:[1,2,3]}], dataDeInicio:"18/03/2021", status:"cursando"},
+        {_idCurso:"", topicos:[{topico:1, status:"concluido", aulasConcluidas:[1,2,3]}], dataDeInicio:"18/03/2021", dataDeTermino:"22/03/2021" status:"concluido", certificado:"uuid"},
+    ]
+    leciona: [
+        {_idCurso:""}
+    ]
+}
+
+Cursos {
+    _id:"uuid"
+    nome: "JavaScript"
+    duracao: 12
+    dataDeCriacao:"14/02/2020"
+    ultimaAtualizao:"26/05/2021"
+    descricao: "Curso de JavaScript..."
+    tag: ["informática", "programação"]
+    topicos[
+        {topico: 1, descricao:"", aulas: [{aula: 1, conteudo:"uuid"},{aula: 2, conteudo:"uuid"}]},
+        {topico: 2, descricao:"", aulas: [{aula: 1, conteudo:"uuid"},{aula: 2, conteudo:"uuid"}]},
+        ]
+}
+]}
